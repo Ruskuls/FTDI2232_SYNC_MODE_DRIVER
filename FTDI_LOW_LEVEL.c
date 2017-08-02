@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #include "../ftd2xx.h"
 #include "FTDI_LOW_LEVEL.h"
 
 FT_HANDLE ftHandle;
 FT_STATUS ftStatus;
+
 
 void FT_Find_all_Connected_Devices(void)
 {
@@ -49,8 +51,6 @@ void FT_Find_all_Connected_Devices(void)
 void FT_Open_By_SN(void)
 {
 
-	DWORD numDevs;
-
 	ftStatus = FT_OpenEx("FT17MPR0A",FT_OPEN_BY_SERIAL_NUMBER, &ftHandle);
 
 	if (ftStatus != FT_OK)
@@ -64,11 +64,9 @@ void FT_Open_By_SN(void)
 	}
 }
 
-
 //calling this function configure FTDI. Full functionality is not implemented yet
-void FT_SetConfiguration(int FT_MODE)
+void FT_SetConfiguration(UCHAR Mask, UCHAR FT_MODE)
 {
-	UCHAR Mask = 0xff;
 
 	//configure FTDI for using in Syncronous mode, up to 480Mbps
 	ftStatus = FT_SetBitMode(ftHandle, Mask, FT_MODE);
@@ -87,6 +85,25 @@ void FT_GetConfiguration(void)
 
 	if (ftStatus == FT_OK)
 	{
-		printf("BitMode=%d\n",BitMode);
+		printf("BitMode=%x\n",BitMode);
 	}
 }
+
+bool FT_SendByte(UCHAR cValue)
+{
+	DWORD BytesWritten;
+
+	ftStatus = FT_Write(ftHandle, &cValue, 1, &BytesWritten);
+	if (ftStatus == FT_OK)
+	{
+		printf(" FT_Write Ok, sent byte 0x%x\n", cValue);
+		return true;
+	}
+	else
+	{
+		printf("FT_Write Failed\n");
+		return false;
+	}
+}
+
+

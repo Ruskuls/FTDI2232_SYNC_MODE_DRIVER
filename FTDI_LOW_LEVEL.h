@@ -3,7 +3,8 @@
 
 void FT_Find_all_Connected_Devices(void);
 void FT_Open_By_SN(void);
-void FT_SetConfiguration(int FT_MODE);
+void FT_SetConfiguration(UCHAR Mask, UCHAR FT_MODE);
 void FT_GetConfiguation(void);
+bool FT_SendByte(UCHAR cValue);
 
 #endif
