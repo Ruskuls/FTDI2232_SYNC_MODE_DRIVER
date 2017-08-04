@@ -48,62 +48,143 @@ void FT_Find_all_Connected_Devices(void)
 	}
 }
 
-void FT_Open_By_SN(void)
+bool FT_Open_By_SN(bool FT_ShowDebugInformation)
 {
 
-	ftStatus = FT_OpenEx("FT17MPR0A",FT_OPEN_BY_SERIAL_NUMBER, &ftHandle);
+	ftStatus = FT_OpenEx("FT26FFDLA",FT_OPEN_BY_SERIAL_NUMBER, &ftHandle);
 
 	if (ftStatus != FT_OK)
 	{
-		printf("FT open failed");
-		printf("Can't finde FTDI device with specified SN\n");
+		if (FT_ShowDebugInformation == TRUE)
+		{
+			printf("FT open failed\n");
+			printf("Can't finde FTDI device with specified SN\n");
+		}
+		return true;
 	}
 	else
 	{
-		printf("FTDI for FPGA is found\n");
+		if (FT_ShowDebugInformation == TRUE)
+		{
+			printf("FTDI for FPGA is found\n");
+		}
+		return false;
 	}
 }
 
 //calling this function configure FTDI. Full functionality is not implemented yet
-void FT_SetConfiguration(UCHAR Mask, UCHAR FT_MODE)
+bool FT_SetConfiguration(UCHAR Mask, UCHAR FT_MODE, bool FT_ShowDebugInformation)
 {
 
 	//configure FTDI for using in Syncronous mode, up to 480Mbps
 	ftStatus = FT_SetBitMode(ftHandle, Mask, FT_MODE);
 	if (ftStatus == FT_OK)
 	{
-		printf("FTDI is configured SYNC FIFO\n");
+		if (FT_ShowDebugInformation == true)
+		{
+			printf("FTDI is configured SYNC FIFO\n");
+		}
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
 //Get information of selected FTDI configuration information. CPU,Syn FIFI, Async FIFO
-void FT_GetConfiguration(void)
+UCHAR FT_GetConfiguration(bool FT_ShowDebugInformation)
 {
-	UCHAR BitMode = 6;
+	UCHAR BitMode;
 
 	ftStatus = FT_GetBitMode(ftHandle, &BitMode);
 
 	if (ftStatus == FT_OK)
 	{
-		printf("BitMode=%x\n",BitMode);
+		if (FT_ShowDebugInformation == true)
+		{
+			printf("BitMode=%x\n",BitMode);
+		}
+		return BitMode;
+	}
+	else
+	{
+		return 0xAA;
 	}
 }
 
-bool FT_SendByte(UCHAR cValue)
+// This function writes to FTDI device only one byte
+bool FT_SendByte(UCHAR cValue, bool FT_ShowDebugInformation)
 {
 	DWORD BytesWritten;
 
 	ftStatus = FT_Write(ftHandle, &cValue, 1, &BytesWritten);
 	if (ftStatus == FT_OK)
 	{
-		printf(" FT_Write Ok, sent byte 0x%x\n", cValue);
+		if (FT_ShowDebugInformation == true)
+		{
+			printf(" FT_Write Ok, sent byte 0x%x\n", cValue);
+		}
 		return true;
 	}
 	else
 	{
-		printf("FT_Write Failed\n");
+		if (FT_ShowDebugInformation == true)
+		{
+			printf("FT_Write Failed\n");
+		}
 		return false;
 	}
 }
 
+bool FT_SendBuffer(UCHAR* pTxBuffer, int nPageSize, int nBufferSize)
+{
+//	DWORD nBufferSize = 32;
+	DWORD BytesSent;
+	int nTxBuffer = 0;
 
+	while(nPageSize !=0)
+	{
+		ftStatus = FT_Write(ftHandle, (char*)((int)pTxBuffer+nTxBuffer), nPageSize, &BytesSent);
+		if (ftStatus == FT_OK)
+		{
+			if (BytesSent == nPageSize)
+			{
+				nTxBuffer += BytesSent;
+			}
+			else
+			{
+				nTxBuffer += BytesSent;
+			}
+		}
+		else
+		{
+			printf("FT Write Failed\n");
+			return false;
+		}
+		if ((nBufferSize - nTxBuffer) < nPageSize)
+		{
+			nPageSize = (nBufferSize - nTxBuffer);
+		}
+	}
+
+	return true;
+}
+
+UCHAR FT_ReadByte()
+{
+
+	DWORD BytesReceived;
+	UCHAR FT_Byte;
+
+	ftStatus = FT_Read(ftHandle, &FT_Byte, 1, &BytesReceived);
+	if (ftStatus == FT_OK)
+	{
+		return FT_Byte;
+	}
+	else
+	{
+		printf("FT_Read failed\n");
+		return 0;
+	}
+}
