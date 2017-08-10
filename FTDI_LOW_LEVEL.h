@@ -8,5 +8,6 @@ UCHAR FT_GetConfiguation(bool FT_ShowDebugInformation);
 bool FT_SendByte(UCHAR cValue, bool FT_ShowDebugInformation);
 bool FT_SendBuffer(UCHAR* pTxBuffer, int nPageSize, int nBufferSize);
 UCHAR FT_ReadByte();
+bool FT_ReadBuffer(UCHAR* pRxBuffer, int nPageSize, int nBMBufferSize);
 
 #endif

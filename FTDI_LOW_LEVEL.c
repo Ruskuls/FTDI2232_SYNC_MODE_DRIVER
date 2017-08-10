@@ -188,3 +188,38 @@ UCHAR FT_ReadByte()
 		return 0;
 	}
 }
+
+bool FT_ReadBuffer(UCHAR* pRxBuffer, int nPageSize, int nBMBufferSize)
+{
+	DWORD nBufferSize = nBMBufferSize;
+	DWORD BytesReceived;
+	int nRxBuffer = 0;
+
+	while(nPageSize != 0)
+	{
+		ftStatus = FT_Read(ftHandle, (UCHAR*)((int)pRxBuffer+nRxBuffer), nPageSize, &BytesReceived);
+		if (ftStatus == FT_OK)
+		{
+			if (BytesReceived == nPageSize)
+			{
+				nRxBuffer += BytesReceived;
+			}
+			else
+			{
+				nRxBuffer += BytesReceived;
+			}
+		}
+		else
+		{
+			printf("FT_Read Failed!\n");
+			return false;
+		}
+
+		if ((nBufferSize - nRxBuffer) < nPageSize)
+		{
+			nPageSize = (nBufferSize - nRxBuffer);
+		}
+	}
+
+	return true;
+}
