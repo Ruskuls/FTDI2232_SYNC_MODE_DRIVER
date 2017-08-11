@@ -2,5 +2,6 @@
 #define FTDI_MID_LEVEL_H_INCLUDED
 
 bool FT_SendReceiveBuffer(UCHAR* TxBuffer, UCHAR* RxBuffer, int nPageSize, int nBufferSize);
+bool FT_ProcessFile(UCHAR* fileName);
 
 #endif
