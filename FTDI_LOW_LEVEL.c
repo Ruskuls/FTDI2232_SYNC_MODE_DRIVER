@@ -148,14 +148,9 @@ bool FT_SendBuffer(UCHAR* pTxBuffer, int nPageSize, int nBufferSize)
 		ftStatus = FT_Write(ftHandle, (char*)((int)pTxBuffer+nTxBuffer), nPageSize, &BytesSent);
 		if (ftStatus == FT_OK)
 		{
-			if (BytesSent == nPageSize)
-			{
-				nTxBuffer += BytesSent;
-			}
-			else
-			{
-				nTxBuffer += BytesSent;
-			}
+			nTxBuffer += BytesSent;
+//			printf("BytesSend %d\n", BytesSent);
+//			printf("nTxBuffer value %d\n",nTxBuffer);
 		}
 		else
 		{
