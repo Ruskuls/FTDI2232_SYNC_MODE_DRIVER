@@ -20,7 +20,7 @@ bool FT_SendReceiveBuffer(UCHAR* TxBuffer, UCHAR* RxBuffer, int nPageSize, int n
 //	return true;
 }
 
-bool FT_ProcessFile(UCHAR* fileName)
+bool FT_ProcessFile(UCHAR* fileName, UCHAR* ReceivedFileName)
 {
 	clock_t start_t, end_t, total_t;
 	long elapsed;
@@ -91,7 +91,7 @@ bool FT_ProcessFile(UCHAR* fileName)
                 printf("elapsed time in: %d\n", total_t);
 
 		start_t = clock();
-		fp = fopen("received_file.jpg", "w+");
+		fp = fopen(ReceivedFileName, "w+");
 		fwrite(RxFileBuffer, 1, lsize, fp);
 		fclose(fp);
 		free(RxFileBuffer);

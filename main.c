@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
 //	FT_ProcessFile("lena512.bmp");
 //	FT_ProcessFile("test.txt");
-	FT_ProcessFile("test_img.JPG");
+	FT_ProcessFile("test_img.JPG", "Received_image.jpg");
 	// Close FTDI port
 	FT_Close(ftHandle);
 }
